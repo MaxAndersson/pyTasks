@@ -1,8 +1,8 @@
 import urllib2
 import json
-#from celery import Celery
+from celery import Celery
 
-#app = Celery('tasks', backend='amqp', broker='amqp://')
+app = Celery('tasks', backend='amqp', broker='amqp://')
 
 def downloadFile(name):
     url = "http://smog.uppmax.uu.se:8080/swift/v1/tweets/{}".format(name)
@@ -29,11 +29,15 @@ def downloadFile(name):
 
     f.close()
     return file_name
-
+def getFile(aFile):
+    if os.path.isfile(aFile):
+        return aFile
+    else:
+        return downloadFile(aFile)
 #@app.task
 def countMentionInTweetFile(aFile,words):
     searchwords = [[word, 0] for word in words]
-    file_name = aFile
+    file_name = getFile(aFile)
     with open(file_name,'r') as lines:
         for line in lines:
             if line != '\n':
