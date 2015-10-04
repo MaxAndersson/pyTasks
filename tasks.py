@@ -1,5 +1,6 @@
 import urllib2
 import json
+import os.path
 from celery import Celery
 
 app = Celery('tasks', backend='amqp', broker='amqp://')
