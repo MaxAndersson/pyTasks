@@ -31,7 +31,7 @@ def countWords():
     results = [tasks.countMentionInTweetFile(aFile,words) for aFile in files]
 
 
-    return tasks.countMentionInTweetFile(aFile,words)
+    return tasks.countMentionInTweetFile.delay(aFile,words)
 
 if __name__ == '__main__':
 
