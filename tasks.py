@@ -35,7 +35,12 @@ def getFile(aFile):
         return aFile
     else:
         return downloadFile(aFile)
-#@app.task
+
+@app.task
+def aTask():
+    return 'aTask'
+
+@app.task
 def countMentionInTweetFile(aFile,words):
     searchwords = [[word, 0] for word in words]
     file_name = getFile(aFile)
