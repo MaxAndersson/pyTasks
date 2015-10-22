@@ -32,6 +32,7 @@ def reduce_finished_tasks(partial_results):
             else:
                 consolidated[key] = elem
     return consolidated
+
 @app.route('/task/<task_id>', methods = ['GET'])
 def tasks_results(task_id):
     find_task = [task for task in tasks_store if str(task['id']) == task_id]
@@ -60,7 +61,7 @@ def countWords():
     task['count_deployed'] = len(task['results'])
     tasks_store.append(task)
 
-    return redirect(url_for('task_results') + str(task['id']))
+    return redirect(url_for('tasks_results',task_id = str(task['id']))
 
 if __name__ == '__main__':
 
