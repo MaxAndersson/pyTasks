@@ -61,7 +61,7 @@ def countWords():
     task['count_deployed'] = len(task['results'])
     tasks_store.append(task)
 
-    return redirect(url_for('tasks_results',task_id = str(task['id']))
+    return redirect(url_for('tasks_results',task_id = str(task['id'])))
 
 if __name__ == '__main__':
 
