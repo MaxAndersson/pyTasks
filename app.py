@@ -38,9 +38,9 @@ def tasks_results(task_id):
     find_task = [task for task in tasks_store if str(task['id']) == task_id]
     if len(find_task) > 0:
         task = find_task.pop()
-        if task['ready'] == None:
+        if 'ready' not in task :
             task['ready'] = []
-        if task['finished'] == None:
+        if 'finished' not in task:
             task['finished'] = []
         task['ready'] = task['ready'].append([aTask for aTask in task['results'] if aTask.ready == True])
         task['results'] = list(set(task['results']) - set(task['ready']))
