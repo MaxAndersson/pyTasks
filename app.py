@@ -1,6 +1,7 @@
 
 #!flask/bin/python
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect
+from flask import *
 import tasks
 import subprocess
 import sys
