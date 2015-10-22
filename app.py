@@ -38,10 +38,11 @@ def tasks_results(task_id):
     find_task = [task for task in tasks_store if str(task['id']) == task_id]
     if len(find_task) > 0:
         task = find_task.pop()
-        if 'ready' not in task :
+        if 'ready' not in task:
             task['ready'] = []
         if 'finished' not in task:
             task['finished'] = []
+
         task['ready'] = task['ready'].append([aTask for aTask in task['results'] if aTask.ready == True])
         task['results'] = list(set(task['results']) - set(task['ready']))
         task['finished'] = task['finished'].append([aTask.get() for aTask in task['ready']])
@@ -49,7 +50,7 @@ def tasks_results(task_id):
         task['summary'] = reduce_finished_tasks(task['finished'])
         return json.dumps(task)
     else:
-        return redirect(url_for(index))
+        return redirect(url_for('index'))
 @app.route('/countwords', methods=['GET'])
 def countWords():
     bucketURL = 'http://smog.uppmax.uu.se:8080/swift/v1/tweets/'
@@ -59,6 +60,8 @@ def countWords():
     task['id'] = uuid.uuid1()
     task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
     task['count_deployed'] = len(task['results'])
+    task['ready'] = []
+    task['finished'] = []
     tasks_store.append(task)
 
     return redirect(url_for('tasks_results',task_id = str(task['id'])))
