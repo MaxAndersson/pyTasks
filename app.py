@@ -32,7 +32,7 @@ def reduce_finished_tasks(partial_results):
                 consolidated[key] = elem
     return consolidated
 @app.route('/task/<task_id>', methods = ['GET'])
-def tasks(task_id):
+def tasks_results(task_id):
     find_task = [task for task in tasks_store if str(task['id']) == task_id]
     if len(find_task) > 0:
         task = find_task.pop()
@@ -53,13 +53,13 @@ def countWords():
     bucketURL = 'http://smog.uppmax.uu.se:8080/swift/v1/tweets/'
     words = ['han','hon','den','det','denna','denne','hen']
     files = os.popen('curl {}'.format(bucketURL)).read().rsplit('\n')
-
+    task = {}
     task['id'] = uuid.uuid1()
     task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
     task['count_deployed'] = len(task['results'])
     tasks_store.append(task)
 
-    return redirect(url_for('task') + str(task['id']))
+    return redirect(url_for('task_results') + str(task['id']))
 
 if __name__ == '__main__':
 
