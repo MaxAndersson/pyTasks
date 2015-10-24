@@ -10,6 +10,7 @@ import uuid
 
 app = Flask(__name__)
 tasks_store = []
+results_store = []
 
 def get_resource_as_string(name, charset='utf-8'):
     with app.open_resource(name) as f:
@@ -26,9 +27,9 @@ def index():
 def reduce_finished_tasks(partial_results):
     consolidated = {}
     for result in partial_results:
-        for (key,elem) in result.items:
+        for (key,elem) in result.items():
             if key in consolidated:
-                consolidated[key] = consolidated['key'] + elem
+                consolidated[key] = consolidated[key] + elem
             else:
                 consolidated[key] = elem
     return consolidated
@@ -38,17 +39,26 @@ def tasks_results(task_id):
     find_task = [task for task in tasks_store if str(task['id']) == task_id]
     if len(find_task) > 0:
         task = find_task.pop()
-        if 'ready' not in task:
-            task['ready'] = []
-        if 'finished' not in task:
-            task['finished'] = []
+        ready = [aTask for aTask in task['results'] if aTask.ready() == True]
+        results = [aTask.get() for aTask in ready]
+        summary = reduce_finished_tasks(results)
 
-        task['ready'] = task['ready'].append([aTask for aTask in task['results'] if aTask.ready == True])
-        task['results'] = list(set(task['results']) - set(task['ready']))
-        task['finished'] = task['finished'].append([aTask.get() for aTask in task['ready']])
-        task['count_finished'] = len(task['finished'])
-        task['summary'] = reduce_finished_tasks(task['finished'])
-        return json.dumps(task)
+        return json.dumps(dict(
+        id=task['id'],
+        count_deployed=task['count_deployed'],
+        count_finished=len(results),
+        summary=summary
+        ))
+
+        if ready != None and ready != []:
+            task['results'] = list(set(task['results']) - set(ready))
+        finished = [aTask.get() for aTask in ready]
+
+        if finished != None and finished != []:
+            task['count_finished'] = len(finished)
+            task['summary'] = reduce_finished_tasks(finished)
+
+        return json.dumps()
     else:
         return redirect(url_for('index'))
 @app.route('/countwords', methods=['GET'])
@@ -58,12 +68,10 @@ def countWords():
     files = os.popen('curl {}'.format(bucketURL)).read().rsplit('\n')
     task = {}
     task['id'] = uuid.uuid1()
-    task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
+    task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files] #[tasks.countMentionInTweetFile.delay('tweets_19.txt',words),tasks.countMentionInTweetFile.delay('tweets_19.txt',words)] #
     task['count_deployed'] = len(task['results'])
-    task['ready'] = []
-    task['finished'] = []
     tasks_store.append(task)
-
+    print task
     return redirect(url_for('tasks_results',task_id = str(task['id'])))
 
 if __name__ == '__main__':

@@ -52,4 +52,4 @@ def countMentionInTweetFile(aFile,words):
                     #print tweet['text']
                     for word in searchwords:
                         word[1] = word[1] + tweet['text'].count(word[0])
-    return json.dumps(dict(searchwords),indent = 4)
+    return dict(searchwords)
