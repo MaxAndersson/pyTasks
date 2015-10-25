@@ -47,18 +47,9 @@ def tasks_results(task_id):
         id=task['id'],
         count_deployed=task['count_deployed'],
         count_finished=len(results),
-        summary=summary
+        summary=summary,
+        task_ids     = [aTask.__str__() for aTask in ready]
         ))
-
-        if ready != None and ready != []:
-            task['results'] = list(set(task['results']) - set(ready))
-        finished = [aTask.get() for aTask in ready]
-
-        if finished != None and finished != []:
-            task['count_finished'] = len(finished)
-            task['summary'] = reduce_finished_tasks(finished)
-
-        return json.dumps()
     else:
         return redirect(url_for('index'))
 @app.route('/countwords', methods=['GET'])
@@ -68,7 +59,8 @@ def countWords():
     files = os.popen('curl {}'.format(bucketURL)).read().rsplit('\n')
     task = {}
     task['id'] = uuid.uuid1()
-    task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files] #[tasks.countMentionInTweetFile.delay('tweets_19.txt',words),tasks.countMentionInTweetFile.delay('tweets_19.txt',words)] #
+    task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
+    #task['results'] = [tasks.countMentionInTweetFile.delay('tweets_19.txt',words),tasks.countMentionInTweetFile.delay('tweets_19.txt',words)]
     task['count_deployed'] = len(task['results'])
     tasks_store.append(task)
     print task
