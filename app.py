@@ -59,8 +59,8 @@ def countWords():
     files = os.popen('curl {}'.format(bucketURL)).read().rsplit('\n')
     task = {}
     task['id'] = uuid.uuid1()
-    task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
-    #task['results'] = [tasks.countMentionInTweetFile.delay('tweets_19.txt',words),tasks.countMentionInTweetFile.delay('tweets_19.txt',words)]
+    #task['results'] = [tasks.countMentionInTweetFile.delay(aFile,words) for aFile in files]
+    task['results'] = [tasks.countMentionInTweetFile.delay('tweets_19.txt',words),tasks.countMentionInTweetFile.delay('tweets_19.txt',words)]
     task['count_deployed'] = len(task['results'])
     tasks_store.append(task)
     print task
